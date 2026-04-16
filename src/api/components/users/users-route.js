@@ -7,21 +7,18 @@ const route = express.Router();
 module.exports = (app) => {
   app.use('/users', route);
 
-  // Get list of users
-  route.get('/', usersController.getUsers);
-
-  // Create a new user
+  // Create a new user --> register
   route.post('/', usersController.createUser);
 
-  // Get user detail
-  route.get('/:id', usersController.getUser);
+  // Login endpoint
+  route.post('/login', usersController.loginUser);
 
-  // Update user
-  route.put('/:id', usersController.updateUser);
+  // Get user detail --> lihat profil + POINT + voucher yg dipunya
+  route.get('/:id', usersController.getUser);
 
   // Change password
   route.put('/:id/change-password', usersController.changePassword);
 
-  // Delete user
-  route.delete('/:id', usersController.deleteUser);
+  // Liat memberships (nampilin level, ada hitung total transaksi)
+  route.get('/memberships', usersController.getMemberships);
 };

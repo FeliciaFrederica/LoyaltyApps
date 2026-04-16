@@ -8,7 +8,7 @@ const points = require('./components/points/points-route');
 const products = require('./components/products/products-route');
 const redeem = require('./components/redeem/redeem-route');
 const rewards = require('./components/rewards/rewards-route');
-const transactions = require('./components/transactions/transactions-route');
+const transactions = require('./components/transactions/transactions-route.js');
 const users = require('./components/users/users-route');
 
 module.exports = () => {
