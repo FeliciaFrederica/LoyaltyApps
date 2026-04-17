@@ -17,7 +17,7 @@ module.exports = {
   },
   port: process.env.PORT || 5000,
   database: {
-    connection: process.env.DB_CONNECTION,
+    connection: process.env.DB_URI,
     name: process.env.DB_NAME,
   },
 };
