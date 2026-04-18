@@ -1,9 +1,10 @@
 const productsService = require('./products-service');
 
+// untuk melihat daftar product yang ada
 async function getProducts(request, response, next) {
   try{
     const products = await productsService.getAllProducts();
-    reponse.status(200).json({
+    response.status(200).json({
       success: true,
       data: products
     });
@@ -12,6 +13,7 @@ async function getProducts(request, response, next) {
   }
 }
 
+// untuk menambahkan product
 async function addProducts(request, response, next) {
   try{
     const productsData = request.body;
