@@ -31,7 +31,33 @@ async function createProducts(data) {
   return await productsRepository.createProducts(name, price, stock, description);
 }
 
+async function updateProduct(id, data) {
+  const product = await productsRepository.getProductById(id);
+  
+  // cek validasi input stok
+  if (data.stock !== undefined && data.stock < 0) {
+    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid Value: must be a positive number.');
+  }
+  
+  // cek validasi input produk 
+  if (result.matchedCount === 0) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Product Not Found!');
+  }
+
+  // logic
+  const { name, price, stock, description } = data;
+  const result = await productsRepository.updateProducts( id, name, price, stock, description );
+
+  return { message: 'Product updated successfully!', detail: result};
+}
+
+async function deleteProduct(id) {
+  // to do
+}
+
 module.exports = {
   getAllProducts,
-  createProducts
+  createProducts,
+  updateProduct,
+  deleteProduct,
 };

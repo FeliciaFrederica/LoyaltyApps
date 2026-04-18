@@ -15,17 +15,17 @@ async function orderProducts(userId, productId, quantity) {
     throw errorResponder(errorTypes.VALIDATION_ERROR, 'Quantity must be at least 1');
   }
 
+  // cek stok
+  if (product.stock < quantity) {
+    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Insufficient stock');
+  }
+  
   // cek produk
   const product = await transactionsRepository.getProductById(productId);
   if (!product) {
     throw errorResponder(errorTypes.NOT_FOUND, 'Product not found');
   }
-
-  // cek stok
-  if (product.stock < quantity) {
-    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Insufficient stock');
-  }
-
+  
   // cek user
   const user = await transactionsRepository.getUserById(userId);
   if (!user) {

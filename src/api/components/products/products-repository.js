@@ -16,7 +16,6 @@ async function updateProducts(id, name, price, stock, description) {
 }
 
 async function deleteProducts(id) {
-  return Products.deleteOne({ _id: id });
 }
 
 module.exports = {
