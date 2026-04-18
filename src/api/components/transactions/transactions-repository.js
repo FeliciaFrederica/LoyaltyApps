@@ -5,9 +5,7 @@ async function createTransaction(data) {
 }
 
 async function getTransactionHistory(userId) {
-  return Transactions.find({ userId })
-  .populate('productId')
-  .sort({ date: -1 });
+  return Transactions.find({ userId }).populate('productId').sort({ date: -1 });
 }
 
 async function getProductById(id) {
@@ -22,5 +20,5 @@ module.exports = {
   createTransaction,
   getTransactionHistory,
   getProductById,
-  getUserById
+  getUserById,
 };

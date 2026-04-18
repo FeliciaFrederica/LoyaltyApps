@@ -1,7 +1,8 @@
 const express = require('express');
 const transactionsController = require('./transactions-controller');
 const passport = require('../../middlewares/authentication');
-const userAuth = passport.authenticate('jwt', {session: false});
+
+const userAuth = passport.authenticate('jwt', { session: false });
 const route = express.Router();
 
 module.exports = (app) => {
