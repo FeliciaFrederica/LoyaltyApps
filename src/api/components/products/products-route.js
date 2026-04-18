@@ -9,4 +9,7 @@ module.exports = (app) => {
 
   // Get a list of products
   route.get('/', productsController.getProducts);
+
+  // Menambahkan product
+  route.post('/', productsController.addProducts);
 };

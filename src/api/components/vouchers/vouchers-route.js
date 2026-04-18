@@ -8,8 +8,8 @@ module.exports = (app) => {
   app.use('/vouchers', route);
 
   // melihat voucher
-  route.get('/vouchers', vouchersController.getVouchers);
+  route.get('/', vouchersController.getVouchers);
 
   // upload voucher (admin)
-  route.post('/vouchers', vouchersController.addVouchers);
+  route.post('/', vouchersController.addVouchers);
 };
