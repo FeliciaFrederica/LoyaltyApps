@@ -12,4 +12,10 @@ module.exports = (app) => {
 
   // Menambahkan product
   route.post('/', productsController.addProducts);
+
+  // Mengupdate product
+  route.put('/:id', adminOnly, productsController.updateProduct);
+
+  // Menghapus product
+  route.delete('/:id', adminOnly, productsController.deleteProduct);
 };
