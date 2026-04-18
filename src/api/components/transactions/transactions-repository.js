@@ -5,19 +5,22 @@ async function createTransaction(data) {
 }
 
 async function getTransactionHistory(userId) {
-  return Transactions.findAll({
-    where: { userId },
-    include: [{ model: Products, as: 'product' }],
-    order: [['date', 'DESC']]
-  });
+  return Transactions.find({ userId })
+  .populate('productId')
+  .sort({ date: -1 });
 }
 
 async function getProductById(id) {
-  return Products.findByPk(id);
+  return Products.findById(id);
+}
+
+async function getUserById(id) {
+  return Users.findById(id);
 }
 
 module.exports = {
   createTransaction,
   getTransactionHistory,
-  getProductById
+  getProductById,
+  getUserById
 };

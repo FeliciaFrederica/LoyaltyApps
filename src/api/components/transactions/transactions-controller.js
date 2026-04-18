@@ -18,7 +18,7 @@ async function orderProducts(request, response, next) {
       productId,
       quantity
     );
-    return response.status(200).json(orderResult);
+    return response.status(201).json(orderResult);
   } catch (error) {
     next(error);
   }
@@ -26,8 +26,8 @@ async function orderProducts(request, response, next) {
 
 async function getTransactionHistory(request, response, next) {
   try {
-    const { userId } = request.user;
-    const history = await transactionsService.getTransactionHistory(userId);
+    const { id } = request.user;
+    const history = await transactionsService.getTransactionHistory(id);
     return response.status(200).json(history);
   } catch (error) {
     next(error);
