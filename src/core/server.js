@@ -66,4 +66,6 @@ app.use((error, request, response, next) =>
   })
 );
 
+require("dotenv").config();
+const mongoose = require("mongoose");
 module.exports = app;

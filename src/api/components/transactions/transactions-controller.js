@@ -2,11 +2,35 @@ const transactionsService = require('./transactions-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function earnPoint(request, response, next) {
-//  todo
+  try {
+    const {id} = request.user;
+    const {points, productId} = request.body;
+    const result = await transactionsService.createTransaction({
+      userId: id,
+      productId,
+      type: 'earn',
+      points
+    });
+    return response.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
 }
 
 async function redeemVouchers(request, response, next) {
-// todo
+  try {
+    const {id} = request.user;
+    const {points, productId} = request.body;
+    const result = await transactionsService.createTransaction({
+      userId: id,
+      productId,
+      type: 'redeem',
+      points
+    });
+    return response.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
 }
 
 async function orderProducts(request, response, next) {
@@ -33,3 +57,10 @@ async function getTransactionHistory(request, response, next) {
     next(error);
   }
 }
+
+module.exports = {
+  earnPoint,
+  redeemVouchers,
+  orderProducts,
+  getTransactionHistory
+};
