@@ -42,17 +42,17 @@ async function changePassword(request, response, next) {
 
 async function getMemberships(request, response, next) {
   try {
-    return response.status(200).json ({
-      membership : "Bronze",
-      totalTransactions: 0
+    return response.status(200).json({
+      membership: 'Bronze',
+      totalTransactions: 0,
     });
-  } catch(error) {
-    next(error);
+  } catch (error) {
+    return next(error);
   }
 }
 
 module.exports = {
   getUser,
   changePassword,
-  getMemberships
+  getMemberships,
 };

@@ -2,20 +2,20 @@ const productsService = require('./products-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function getProducts(request, response, next) {
-  try{
+  try {
     const products = await productsService.getAllProducts();
     response.status(200).json(products);
-  } catch (error){
+  } catch (error) {
     next(error);
   }
 }
 
 async function addProducts(request, response, next) {
-  try{
+  try {
     const productsData = request.body;
     const newProducts = await productsService.createProducts(productsData);
     response.status(201).json(newProducts);
-  } catch (error){
+  } catch (error) {
     next(error);
   }
 }
@@ -29,23 +29,23 @@ async function updateProduct(request, response, next) {
       throw errorResponder(
         errorTypes.VALIDATION_ERROR,
         'At least one field must be provided for update'
-      )
+      );
     }
     const result = await productsService.updateProduct(id, data);
 
     return response.status(200).json(result);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
-async function deleteProduct(request, response, next) {
-  // to do
-}
+// async function deleteProduct(request, response, next) {
+//   // to do
+// }
 
 module.exports = {
   getProducts,
   addProducts,
   updateProduct,
-  deleteProduct
+  // deleteProduct,
 };

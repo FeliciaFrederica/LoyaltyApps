@@ -14,7 +14,7 @@ async function createVouchers(code, discount, quota, expiredAt) {
 
 async function updateVouchers(id, code, discount, quota, expiredAt) {
   return Vouchers.updateOne(
-    { _id: id }, 
+    { _id: id },
     { $set: { code, discount, quota, expiredAt } }
   );
 }

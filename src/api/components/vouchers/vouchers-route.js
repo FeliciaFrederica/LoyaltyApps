@@ -11,5 +11,5 @@ module.exports = (app) => {
   route.get('/', vouchersController.getVouchers);
 
   // upload voucher (admin)
-  route.post('/', vouchersController.addVouchers);
+  route.post('/', adminOnly, vouchersController.addVouchers);
 };

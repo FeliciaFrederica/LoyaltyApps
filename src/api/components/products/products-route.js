@@ -1,6 +1,6 @@
 const express = require('express');
 const productsController = require('./products-controller');
-const { userAuth, adminOnly } = require('../middlewares/auth-middleware');
+const adminOnly = require('../../middlewares/auth-middleware');
 
 const route = express.Router();
 
