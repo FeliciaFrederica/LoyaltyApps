@@ -4,10 +4,6 @@ async function getVouchers() {
   return Vouchers.find();
 }
 
-async function getVouchers(id) {
-  return Vouchers.findById(id);
-}
-
 async function getVouchersByCode(code) {
   return Vouchers.findOne({ code });
 }
@@ -28,7 +24,6 @@ async function deleteVouchers(id) {
 }
 
 module.exports = {
-  getVouchers,
   getVouchers,
   getVouchersByCode,
   createVouchers,

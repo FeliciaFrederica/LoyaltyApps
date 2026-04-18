@@ -7,7 +7,7 @@ const route = express.Router();
 module.exports = (app) => {
   app.use('/products', route);
 
-  // Get a list of products
+  // Melihat product
   route.get('/', productsController.getProducts);
 
   // Menambahkan product

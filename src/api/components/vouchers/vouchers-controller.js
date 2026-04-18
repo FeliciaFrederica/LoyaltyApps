@@ -1,5 +1,6 @@
 const vouchersService = require('./vouchers-service');
 
+// untuk melihat daftar voucher yang ada
 async function getVouchers(request, response, next) {
   try {
     const vouchers = await vouchersService.getAllVouchers();
@@ -12,6 +13,7 @@ async function getVouchers(request, response, next) {
   }
 }
 
+// untuk menambahkan voucher
 async function addVouchers(request, response, next) {
   try {
     const vouchersData = request.body;
