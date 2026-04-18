@@ -1,4 +1,4 @@
-const { Transactions, Products } = require('../../models');
+const { Transactions, Products } = require('../../../models');
 
 async function createTransaction(data) {
   return Transactions.create(data);

@@ -1,4 +1,4 @@
-const vouchersRepository = require ('./vouchers-repostitory');
+const vouchersRepository = require ('./vouchers-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function getAllVouchers() {
