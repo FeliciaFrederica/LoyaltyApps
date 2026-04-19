@@ -14,7 +14,7 @@ async function getUser(request, response, next) {
 
 async function changePassword(request, response, next) {
   try {
-    const { id } = request.params;
+    const { id } = request.user._id;
     const {
       old_password: oldPassword,
       new_password: newPassword,

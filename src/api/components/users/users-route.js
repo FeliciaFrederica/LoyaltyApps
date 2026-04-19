@@ -10,7 +10,7 @@ module.exports = (app) => {
   route.get('/me', userAuth, usersController.getUser);
 
   // Change password
-  route.put('/:id/change-password', userAuth, usersController.changePassword);
+  route.put('/me/change-password', userAuth, usersController.changePassword);
 
   // Liat memberships (nampilin level, ada hitung total transaksi)
   route.get('/memberships', userAuth, usersController.getMemberships);
