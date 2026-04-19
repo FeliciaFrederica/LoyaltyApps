@@ -12,8 +12,8 @@ async function getTransactionHistory(userId) {
   });
 }
 
-async function getProductById(id) {
-  return Products.findByPk(id);
+async function getVoucherById(id) {
+  return Vouchers.findById(id);
 }
 
 module.exports = {

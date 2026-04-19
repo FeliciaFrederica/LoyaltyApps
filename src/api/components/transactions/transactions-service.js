@@ -1,13 +1,25 @@
 const transactionsService = require('./transactions-service');
 const transactionsRepository = require('./transactions-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
+const userService = require('../users/users-service');
 
-async function earnPoint(request, response, next) {
-  //  todo
+async function earnPoint(userId, points) {
+  return transactionsRepository.createTransaction({
+    userId,
+    type: "earn",
+    points,
+    date: new Date()
+  });
 }
 
-async function redeemVouchers(request, response, next) {
-  // todo
+async function redeemVouchers(userId, voucherId, points) {
+  return transactionsRepository.createTransaction({
+    userId,
+    type: "redeem",
+    points,
+    voucherId,
+    date: new Date()
+  });
 }
 
 async function orderProducts(userId, productId, quantity) {
@@ -71,4 +83,20 @@ async function getTransactionHistory(userId) {
     );
   }
   return history;
+}
+
+async function getVoucherById(id){
+  return transactionsRepository.getVoucherById(id);
+}
+
+module.exports = {
+  earnPoint,
+  redeemVouchers,
+  orderProducts,
+  getTransactionHistory,
+  getVoucherById
+};
+
+async function createTransaction(date) {
+  return transactionsRepository.createTransaction(data);
 }

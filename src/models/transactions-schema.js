@@ -1,16 +1,16 @@
 module.exports = (mongoose) => {
     const schema = mongoose.Schema({
-        UserId: {
+        userId: {
             type: String,
-            requires: true
+            required: true,
         },
-        productId: {
+        voucherId:{
             type: String
         },
         type: {
             type: String,
-            enum: ['earn', 'redeem', 'order'],
-            required: true
+            enum: ['earn', 'redeem'],
+            required: true,
         },
         points: {
             type: Number,
@@ -21,6 +21,5 @@ module.exports = (mongoose) => {
             default: Date.now
         }
     });
-
     return mongoose.model('Transactions', schema);
 };
