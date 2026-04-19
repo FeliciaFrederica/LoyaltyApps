@@ -1,6 +1,6 @@
 const express = require('express');
 const productsController = require('./products-controller');
-const { userAuth, adminOnly } = require('../middlewares/auth-middleware');
+const adminOnly = require('../../middlewares/auth-middleware');
 
 const route = express.Router();
 
@@ -11,5 +11,12 @@ module.exports = (app) => {
   route.get('/', productsController.getProducts);
 
   // Menambahkan product
-  route.post('/', productsController.addProducts); 
+  route.post('/', userAuth, adminOnly, productsController.addProducts);
+
+  // Mengupdate product
+  route.put('/:id', userAuth, adminOnly, productsController.updateProduct);
+
+  // Menghapus product
+  // route.delete('/:id', userAuth, adminOnly, productsController.deleteProducts);
 };
+

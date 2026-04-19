@@ -40,7 +40,19 @@ async function changePassword(request, response, next) {
   return next(errorResponder(errorTypes.NOT_IMPLEMENTED));
 }
 
+async function getMemberships(request, response, next) {
+  try {
+    return response.status(200).json({
+      membership: 'Bronze',
+      totalTransactions: 0,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getUser,
   changePassword,
+  getMemberships,
 };

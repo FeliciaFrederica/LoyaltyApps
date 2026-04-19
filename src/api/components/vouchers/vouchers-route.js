@@ -12,4 +12,5 @@ module.exports = (app) => {
 
   // upload voucher (admin)
   route.post('/', userAuth, adminOnly, vouchersController.addVouchers);
+
 };
