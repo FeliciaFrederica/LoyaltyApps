@@ -11,5 +11,5 @@ module.exports = (app) => {
   route.get('/', productsController.getProducts);
 
   // Menambahkan product
-  route.post('/', productsController.addProducts);
+  route.post('/', productsController.addProducts); 
 };
