@@ -18,6 +18,8 @@ async function getUser(id) {
     fullName: user.fullName,
     points: user.points || 0,
     vouchers: vouchers || [],
+    membershipTier: user.membershipTier,
+    totalSpend: user.totalSpend,
   };
 }
 
@@ -40,10 +42,10 @@ async function addPoints(userId, points) {
   return user.save();
 }
 
-async function substractPoints(userId, points){
+async function subtractPoints(userId, points){
   const user = await usersRepository.getUser(userId);
   if (user.points < points) {
-    throw new Error("Not enough points");
+    throw new Error("Point tidak mencukupi");
   }
   user.points -= points;
   return user.save();
@@ -55,5 +57,5 @@ module.exports = {
   createUser,
   updateUser,
   addPoints,
-  substractPoints,
+  subtractPoints,
 };

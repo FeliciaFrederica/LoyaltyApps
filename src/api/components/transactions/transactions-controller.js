@@ -4,7 +4,7 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 async function earnPoint(request, response, next) {
   try {
     const userId = request.user.id;
-    const result = await transactionsService.createTransaction(userId);
+    const result = await transactionsService.earnPoint(userId);
     return response.status(201).json(result);
   } catch (error) {
     next(error);

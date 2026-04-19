@@ -5,6 +5,10 @@ async function getAllVouchers() {
     return Promise.resolve(vouchersData);
 }
 
+async function getVoucherById(voucherId){
+    return vouchersRepository.getVoucherById(voucherId);
+}
+
 async function createVouchers(data) {
     const newVouchers = {
         id: vouchersData.length + 1,
@@ -14,9 +18,9 @@ async function createVouchers(data) {
 }
 
 async function decreaseQuota(voucherId){
-    const voucher = await vouchersRepository.getVouchersById(voucherId);
+    const voucher = await vouchersRepository.getVoucherById(voucherId);
     if (!voucher || voucher.quota <= 0){
-        throw new Error("Voucher not available");
+        throw new Error("Voucher tidak tersedia");
     }
     voucher.quota -= 1;
     return voucher.save();
@@ -25,4 +29,6 @@ async function decreaseQuota(voucherId){
 module.exports = {
     getAllVouchers,
     createVouchers,
-}
+    decreaseQuota,
+    getVoucherById
+};

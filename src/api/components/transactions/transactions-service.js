@@ -2,8 +2,9 @@ const transactionsRepository = require('./transactions-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const userService = require('../users/users-service');
 const voucherService = require('../vouchers/vouchers-service');
+const userRepository = require('../users/users-repository');
 
-async function earnPoint(userId, points) {
+async function earnPoint(userId) {
   const earnedPoints = 100;
   await userService.addPoints(userId, earnedPoints); 
   return transactionsRepository.createTransaction({
@@ -16,16 +17,18 @@ async function earnPoint(userId, points) {
 
 async function redeemVouchers(userId, voucherId) {
   const user = await userService.getUser(userId);
-  const voucher = await transactionsRepository.getVoucherById(voucherId);
-  if (!voucher) throw new Error("Voucher not found");
+  const voucher = await voucherService.getVoucherById(voucherId);
+  if (!voucher){ 
+    throw errorResponder(errorTypes.NOT_FOUND, "Voucher tidak ditemukan");
+  }
   if (voucher.expiredAt && voucher.expiredAt < new Date()) {
-    throw new Error("Voucher expired");
+    throw errorResponder(errorTypes.BAD_REQUEST, "Voucher sudah expired");
   }
   if (voucher.quota <= 0) {
-    throw new Error("Voucher not available");
+    throw errorResponder(errorTypes.BAD_REQUEST, "Voucher tidak tersedia");
   }
   if (user.points < voucher.pointsRequired) {
-    throw new Error("Not enough points");
+    throw errorResponder(errorTypes.BAD_REQUEST, "Points tidak mencukupi");
   }
   await userService.subtractPoints(userId, voucher.pointsRequired);
   await voucherService.decreaseQuota(voucherId);
@@ -43,9 +46,7 @@ async function orderProducts(userId, productId, quantity) {
   if (!product) {
     throw errorResponder(errorTypes.NOT_FOUND, 'Product not found');
   }
-
-  const userPoints = await transactionsRepository.getUserPoints(userId);
-  
+  const user = await userService.getUser(userId);
   let discount = 0;
   if (user.membershipTier === 'Platinum') {
     discount = 0.1; 
@@ -92,7 +93,7 @@ async function orderProducts(userId, productId, quantity) {
 
 async function getTransactionHistory(userId) {
   const history = await transactionsRepository.getTransactionHistory(userId);
-  if (!history) {
+  if (!history || history.length === 0) {
     throw errorResponder(
       errorTypes.NOT_FOUND,
       'Transaction history not found for user'
@@ -112,7 +113,3 @@ module.exports = {
   getTransactionHistory,
   getVoucherById
 };
-
-async function createTransaction(date) {
-  return transactionsRepository.createTransaction(data);
-}
