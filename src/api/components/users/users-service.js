@@ -9,7 +9,7 @@ async function getUser(id) {
   ]);
 
   if (!user) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'User not found');
+    throw errorResponder(errorTypes.NOT_FOUND, 'Pengguna tidak ditemukan');
   }
 
   return {
@@ -21,9 +21,17 @@ async function getUser(id) {
   };
 }
 
+async function getUserWithPassword(id) {
+  const user = await usersRepository.getUserWithPassword(id);
+  if (!user) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Pengguna tidak ditemukan');
+  }
+  return user;
+}
+
 async function emailExists(email) {
   const user = await usersRepository.getUserByEmail(email);
-  return !!user; // Return true if user exists, false otherwise
+  return !!user;
 }
 
 async function createUser(email, password, fullName) {
@@ -34,9 +42,32 @@ async function updateUser(id, email, fullName) {
   return usersRepository.updateUser(id, email, fullName);
 }
 
+async function changePassword(id, hashedPassword) {
+  return usersRepository.changePassword(id, hashedPassword);
+}
+
+async function getUserMembershipData(id) {
+  const [user, totalSpent] = await Promise.all([
+    usersRepository.getUser(id),
+    usersRepository.getTotalSpent(id),
+  ]);
+
+  if (!user) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Data pengguna tidak ditemukan');
+  }
+
+  return {
+    user,
+    totalSpent: totalSpent || 0,
+  };
+}
+
 module.exports = {
   getUser,
+  getUserWithPassword,
   emailExists,
   createUser,
   updateUser,
+  changePassword,
+  getUserMembershipData,
 };
