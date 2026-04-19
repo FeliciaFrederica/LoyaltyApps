@@ -10,12 +10,16 @@ async function createProducts(data) {
   
   // validasi apakah harga dan nama tersedia
   if (!name || price === undefined) {
-    throw new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
+      const error = new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
+      error.status = 400;
+      throw error;
   }
 
   // validasi apakah nominal harga yang dimasukkan bernilai minus
   if (price < 0) {
-    throw new Error('Harga tidak valid! Harga tidak boleh kurang dari 0.');
+      const error = new Error('Harga tidak valid! Harga tidak boleh kurang dari 0.');
+      error.status = 401;
+      throw error;
   }
 
   // cek apakah ada duplikasi nama products
@@ -25,7 +29,9 @@ async function createProducts(data) {
   );
 
   if (isDuplicate) {
-    throw new Error('Nama produk sudah digunakan! Silakan gunakan nama lain.');
+      const error = new Error('Nama produk sudah digunakan! Silakan gunakan nama lain.');
+      error.status = 409;
+      throw error;
   }
 
   return await productsRepository.createProducts(name, price, stock, description);
