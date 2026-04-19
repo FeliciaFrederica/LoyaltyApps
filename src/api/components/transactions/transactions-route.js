@@ -1,11 +1,12 @@
 const express = require('express');
-
 const transactionsController = require('./transactions-controller');
+const passport = require('../../middlewares/authentication');
 
+const userAuth = passport.authenticate('jwt', { session: false });
 const route = express.Router();
 
 module.exports = (app) => {
-  app.use('/transactions', route);
+  app.use('/transactions', userAuth, route);
 
   // Add a new point
   route.post('/earn', transactionsController.earnPoint);
@@ -17,5 +18,5 @@ module.exports = (app) => {
   route.post('/order', transactionsController.orderProducts);
 
   // Transaction History
-  route.get('/:userId', transactionsController.getTransactionHistory);
+  route.get('/me', transactionsController.getTransactionHistory);
 };

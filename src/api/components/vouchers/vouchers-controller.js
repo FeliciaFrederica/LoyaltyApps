@@ -21,5 +21,5 @@ async function addVouchers(request, response, next) {
 
 module.exports = {
   getVouchers,
-  addVouchers
+  addVouchers,
 };
