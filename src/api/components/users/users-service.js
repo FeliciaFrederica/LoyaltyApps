@@ -34,9 +34,26 @@ async function updateUser(id, email, fullName) {
   return usersRepository.updateUser(id, email, fullName);
 }
 
+async function addPoints(userId, points) {
+  const user = await usersRepository.getUser(userId);
+  user.points += points;
+  return user.save();
+}
+
+async function substractPoints(userId, points){
+  const user = await usersRepository.getUser(userId);
+  if (user.points < points) {
+    throw new Error("Not enough points");
+  }
+  user.points -= points;
+  return user.save();
+}
+
 module.exports = {
   getUser,
   emailExists,
   createUser,
   updateUser,
+  addPoints,
+  substractPoints,
 };

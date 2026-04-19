@@ -1,25 +1,41 @@
-const transactionsService = require('./transactions-service');
 const transactionsRepository = require('./transactions-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const userService = require('../users/users-service');
+const voucherService = require('../vouchers/vouchers-service');
 
 async function earnPoint(userId, points) {
+  const earnedPoints = 100;
+  await userService.addPoints(userId, earnedPoints); 
   return transactionsRepository.createTransaction({
     userId,
     type: "earn",
-    points,
+    points: earnedPoints,
     date: new Date()
   });
 }
 
-async function redeemVouchers(userId, voucherId, points) {
+async function redeemVouchers(userId, voucherId) {
+  const user = await userService.getUser(userId);
+  const voucher = await transactionsRepository.getVoucherById(voucherId);
+  if (!voucher) throw new Error("Voucher not found");
+  if (voucher.expiredAt && voucher.expiredAt < new Date()) {
+    throw new Error("Voucher expired");
+  }
+  if (voucher.quota <= 0) {
+    throw new Error("Voucher not available");
+  }
+  if (user.points < voucher.pointsRequired) {
+    throw new Error("Not enough points");
+  }
+  await userService.subtractPoints(userId, voucher.pointsRequired);
+  await voucherService.decreaseQuota(voucherId);
   return transactionsRepository.createTransaction({
     userId,
     type: "redeem",
-    points,
+    points: voucher.pointsRequired,
     voucherId,
     date: new Date()
-  });
+  }); 
 }
 
 async function orderProducts(userId, productId, quantity) {
