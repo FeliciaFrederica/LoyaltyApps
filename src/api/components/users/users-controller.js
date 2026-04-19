@@ -5,7 +5,6 @@ const { passwordMatched, hashPassword } = require('../../../utils/password');
 async function getUser(request, response, next) {
   try {
     const user = await usersService.getUser(request.user._id);
-
     return response.status(200).json(user);
   } catch (error) {
     return next(error);
@@ -14,7 +13,7 @@ async function getUser(request, response, next) {
 
 async function changePassword(request, response, next) {
   try {
-    const { id } = request.user._id;
+    const id = request.user._id;
     const {
       old_password: oldPassword,
       new_password: newPassword,
@@ -31,7 +30,7 @@ async function changePassword(request, response, next) {
       throw errorResponder(errorTypes.UNAUTHORIZED, 'Password lama salah');
     }
 
-    if (newPassword.length < 8) {
+    if (!newPassword || newPassword.length < 8) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
         'Password minimal 8 karakter'
@@ -72,12 +71,12 @@ async function getMemberships(request, response, next) {
     let pointMultiplier = 1;
     let hasBirthdayVoucher = false;
 
-    if (totalSpent > 800000) {
+    if (totalSpent >= 800000) {
       tier = 'Platinum';
       discount = 10;
       pointMultiplier = 2;
       hasBirthdayVoucher = true;
-    } else if (totalSpent > 300000) {
+    } else if (totalSpent >= 300000) {
       tier = 'Gold';
       discount = 5;
       hasBirthdayVoucher = true;

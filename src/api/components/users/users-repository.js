@@ -1,4 +1,5 @@
 const { Users, Transactions } = require('../../../models');
+const { ObjectId } = require('mongoose').Types;
 
 async function getUser(id) {
   return Users.findById(id).select('email fullName points vouchers');
@@ -25,9 +26,21 @@ async function changePassword(id, password) {
 }
 
 async function getTotalSpent(userId) {
-  // Mencari semua transaksi milik user
-  const transactions = await Transactions.find({ userId: userId });
-  return transactions.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0);
+  const result = await Transactions.aggregate([
+    {
+      $match: {
+        user_id: new ObjectId(userId),
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: '$totalPrice' },
+      },
+    },
+  ]);
+  //ga ada transaksi, kembalikan 0
+  return result.length > 0 ? result[0].total : 0;
 }
 
 module.exports = {
