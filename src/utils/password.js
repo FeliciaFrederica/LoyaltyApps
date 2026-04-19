@@ -7,18 +7,7 @@ const bcrypt = require('bcrypt');
  */
 async function hashPassword(password) {
   const saltRounds = 16;
-
-  const hashedPassword = await new Promise((resolve, reject) => {
-    bcrypt.hash(password, saltRounds, (err, hash) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(hash);
-      }
-    });
-  });
-
-  return hashedPassword;
+  return bcrypt.hash(password, saltRounds);
 }
 
 /**
@@ -29,7 +18,7 @@ async function hashPassword(password) {
  * @returns {boolean}
  */
 async function passwordMatched(password, hashedPassword) {
-  return bcrypt.compareSync(password, hashedPassword);
+  return bcrypt.compare(password, hashedPassword);
 }
 
 module.exports = {
