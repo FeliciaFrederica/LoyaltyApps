@@ -11,11 +11,12 @@ module.exports = (app) => {
   route.get('/', productsController.getProducts);
 
   // Menambahkan product
-  route.post('/', productsController.addProducts);
+  route.post('/', userAuth, adminOnly, productsController.addProducts);
 
   // Mengupdate product
-  route.put('/:id', adminOnly, productsController.updateProduct);
+  route.put('/:id', userAuth, adminOnly, productsController.updateProduct);
 
   // Menghapus product
-  route.delete('/:id', adminOnly, productsController.deleteProduct);
+  route.delete('/:id', userAuth, adminOnly, productsController.deleteProduct);
 };
+
