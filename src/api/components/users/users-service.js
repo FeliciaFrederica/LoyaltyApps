@@ -45,7 +45,7 @@ async function addPoints(userId, points) {
 async function subtractPoints(userId, points){
   const user = await usersRepository.getUser(userId);
   if (user.points < points) {
-    throw new Error("Point tidak mencukupi");
+    throw errorResponder(errorTypes.BAD_REQUEST, "Point tidak mencukupi");
   }
   user.points -= points;
   return user.save();
