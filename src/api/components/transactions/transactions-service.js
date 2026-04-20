@@ -2,11 +2,12 @@ const transactionsRepository = require('./transactions-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const userService = require('../users/users-service');
 const voucherService = require('../vouchers/vouchers-service');
-const userRepository = require('../users/users-repository');
 
 async function earnPoint(userId) {
   const earnedPoints = 100;
-  await userService.addPoints(userId, earnedPoints); 
+
+  await userService.addPoints(userId, earnedPoints);
+
   return transactionsRepository.createTransaction({
     userId,
     type: "earn",
@@ -18,38 +19,57 @@ async function earnPoint(userId) {
 async function redeemVouchers(userId, voucherId) {
   const user = await userService.getUser(userId);
   const voucher = await voucherService.getVoucherById(voucherId);
-  if (!voucher){ 
+
+  if (!voucher) {
     throw errorResponder(errorTypes.NOT_FOUND, "Voucher tidak ditemukan");
   }
+
   if (voucher.expiredAt && voucher.expiredAt < new Date()) {
     throw errorResponder(errorTypes.BAD_REQUEST, "Voucher sudah expired");
   }
+
   if (voucher.quota <= 0) {
     throw errorResponder(errorTypes.BAD_REQUEST, "Voucher tidak tersedia");
   }
+
   if (user.points < voucher.pointsRequired) {
     throw errorResponder(errorTypes.BAD_REQUEST, "Points tidak mencukupi");
   }
+
   await userService.subtractPoints(userId, voucher.pointsRequired);
   await voucherService.decreaseQuota(voucherId);
+
   return transactionsRepository.createTransaction({
     userId,
     type: "redeem",
     points: voucher.pointsRequired,
     voucherId,
     date: new Date()
-  }); 
+  });
 }
 
 async function orderProducts(userId, productId, quantity) {
+  if (quantity <= 0) {
+    throw errorResponder(
+      errorTypes.VALIDATION_ERROR,
+      'Quantity must be at least 1'
+    );
+  }
+
   const product = await transactionsRepository.getProductById(productId);
   if (!product) {
     throw errorResponder(errorTypes.NOT_FOUND, 'Product not found');
   }
+
+  if (product.stock < quantity) {
+    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Insufficient stock');
+  }
+
   const user = await userService.getUser(userId);
+
   let discount = 0;
   if (user.membershipTier === 'Platinum') {
-    discount = 0.1; 
+    discount = 0.1;
   } else if (user.membershipTier === 'Gold') {
     discount = 0.05;
   }
@@ -60,12 +80,13 @@ async function orderProducts(userId, productId, quantity) {
   const pointsEarned = Math.floor(totalPrice / 30000) * pointsMultiplier;
 
   const transaction = await transactionsRepository.createTransaction({
-    userId, 
-    productId, 
-    quantity, 
-    totalPrice, 
-    pointsEarned,
-    date: new Date()
+    userId,
+    productId,
+    quantity,
+    totalPrice,
+    points: pointsEarned,
+    type: 'order', // FIX typo
+    date: new Date(),
   });
 
   const newTotalSpend = (user.totalSpend || 0) + totalPrice;
@@ -78,32 +99,29 @@ async function orderProducts(userId, productId, quantity) {
     newTier = 'Gold';
   }
 
-  await userRepository.updateUser(userId, {
-    points: newPoints,
-    totalSpend: newTotalSpend,
-    membershipTier: newTier
-  });
+  user.points = newPoints;
+  user.totalSpend = newTotalSpend;
+  user.membershipTier = newTier;
+  await user.save();
 
   return {
     message: 'Order success!',
     detail: transaction,
-    newTier: newTier
-}
+    newTier,
+  };
 }
 
 async function getTransactionHistory(userId) {
   const history = await transactionsRepository.getTransactionHistory(userId);
+
   if (!history || history.length === 0) {
     throw errorResponder(
       errorTypes.NOT_FOUND,
       'Transaction history not found for user'
     );
   }
-  return history;
-}
 
-async function getVoucherById(id){
-  return transactionsRepository.getVoucherById(id);
+  return history;
 }
 
 module.exports = {
@@ -111,5 +129,4 @@ module.exports = {
   redeemVouchers,
   orderProducts,
   getTransactionHistory,
-  getVoucherById
 };

@@ -1,18 +1,16 @@
 const express = require('express');
-
 const userAuth = require('../../middlewares/user-middleware');
 const usersController = require('./users-controller');
 
-const route = express.Router();
-
 module.exports = (app) => {
+  const route = express.Router();
   app.use('/users', route);
 
-  // Get user detail --> lihat profil + POINT + voucher yg dipunya
+  // Lihat profil, poin, voucher yg dipunya
   route.get('/me', userAuth, usersController.getUser);
 
   // Change password
-  route.put('/:id/change-password', userAuth, usersController.changePassword);
+  route.put('/me/change-password', userAuth, usersController.changePassword);
 
   // Liat memberships (nampilin level, ada hitung total transaksi)
   route.get('/memberships', userAuth, usersController.getMemberships);
