@@ -4,8 +4,8 @@ async function getProducts() {
   return Products.find();
 }
 
-async function getProductByName(name){
-  return Products.find({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
+async function findByName(name) {
+  return Products.findOne({ name: name }); 
 }
 
 async function createProducts(name, price, stock, description) {
@@ -25,7 +25,7 @@ async function deleteProducts(id) {
 
 module.exports = {
   getProducts,
-  getProductByName,
+  findByName,
   createProducts,
   updateProducts,
   deleteProducts,
