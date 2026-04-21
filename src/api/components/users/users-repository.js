@@ -55,4 +55,5 @@ module.exports = {
   updateUser,
   changePassword,
   getTotalSpent,
+  addSaldo,
 };

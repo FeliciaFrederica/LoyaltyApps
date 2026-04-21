@@ -81,4 +81,5 @@ module.exports = {
   updateUser,
   changePassword,
   getUserMembershipData,
+  addSaldo,
 };
