@@ -17,6 +17,6 @@ module.exports = (app) => {
   route.put('/:id', userAuth, adminOnly, productsController.updateProduct);
 
   // Menghapus product
-  route.delete('/:id', userAuth, adminOnly, productsController.deleteProduct);
+  // route.delete('/:id', userAuth, adminOnly, productsController.deleteProducts);
 };
 
