@@ -14,28 +14,34 @@ async function orderProducts(userId, productId, quantity) {
   if (quantity <= 0) {
     throw errorResponder(
       errorTypes.VALIDATION_ERROR,
-      'Quantity must be at least 1'
+      'Kuantitas minimal 1 produk'
     );
   }
 
   // cek produk
   const product = await transactionsRepository.getProductById(productId);
   if (!product) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Product not found');
+    throw errorResponder(errorTypes.NOT_FOUND, 'Produk tidak ditemukan.');
   }
 
   // cek stok
   if (product.stock < quantity) {
-    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Insufficient stock');
+    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Maaf, stok habis.');
   }
 
   // cek user
   const user = await transactionsRepository.getUserById(userId);
   if (!user) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'User not found');
+    throw errorResponder(errorTypes.NOT_FOUND, 'User tidak ditemukan');
   }
 
-  const currentPoints = user.points || 0;
+  const minBalance = 1;
+  if ((user.points || 0) < minBalance) {
+    throw errorResponder(
+      errorTypes.VALIDATION_ERROR,
+      `Minimal saldo Rupiah untuk melakukan transaksi adalah Rp ${product.price}.`
+    );
+  }
 
   // logic diskon berdasarkan membership tier
   let discount = 0;
@@ -80,7 +86,7 @@ async function orderProducts(userId, productId, quantity) {
   await user.save();
 
   return {
-    message: 'Order success!',
+    message: 'Order berhasil!',
     detail: transaction,
     newTier,
   };
@@ -95,8 +101,8 @@ async function getTransactionHistory(userId) {
 }
 
 module.exports = {
-  earnPoint,
-  redeemVouchers,
+  // earnPoint,
+  // redeemVouchers,
   orderProducts,
   getTransactionHistory,
 };
