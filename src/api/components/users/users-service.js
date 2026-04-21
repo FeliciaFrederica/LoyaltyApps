@@ -46,6 +46,17 @@ async function changePassword(id, hashedPassword) {
   return usersRepository.changePassword(id, hashedPassword);
 }
 
+async function addSaldo(id, amount) {
+  if (typeof amount !== 'number' || amount <= 0) {
+    throw errorResponder(
+      errorTypes.UNPROCESSABLE_ENTITY,
+      'Jumlah saldo harus positif'
+    );
+  }
+
+  return usersRepository.addSaldo(id, amount);
+}
+
 async function getUserMembershipData(id) {
   const [user, totalSpent] = await Promise.all([
     usersRepository.getUser(id),

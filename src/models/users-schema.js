@@ -24,6 +24,10 @@ module.exports = (db) =>
         type: Number,
         default: 0,
       },
+      saldo: {
+        type: Number,
+        default: 0,
+      },
       vouchers: [
         {
           type: db.Schema.Types.ObjectId,

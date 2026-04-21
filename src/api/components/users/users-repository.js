@@ -43,6 +43,10 @@ async function getTotalSpent(userId) {
   return result.length > 0 ? result[0].total : 0;
 }
 
+async function addSaldo(id, amount) {
+  return Users.updateOne({ _id: id }, { $inc: { saldo: amount } });
+}
+
 module.exports = {
   getUser,
   getUserWithPassword,

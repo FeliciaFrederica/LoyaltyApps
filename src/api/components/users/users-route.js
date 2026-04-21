@@ -14,4 +14,7 @@ module.exports = (app) => {
 
   // Liat memberships (nampilin level, ada hitung total transaksi)
   route.get('/memberships', userAuth, usersController.getMemberships);
+
+  // Tambah Saldo (Top-up)
+  route.post('/saldo', userAuth, usersController.addSaldo);
 };
