@@ -1,8 +1,8 @@
 const vouchersService = require('./vouchers-service');
 
-async function getVouchers(request, response, next) {
+async function getVoucher(request, response, next) {
   try {
-    const vouchers = await vouchersService.getAllVouchers();
+    const vouchers = await vouchersService.getAllVoucher();
     response.status(200).json(vouchers);
   } catch (error) {
     next(error);
@@ -12,7 +12,7 @@ async function getVouchers(request, response, next) {
 async function addVouchers(request, response, next) {
   try {
     const vouchersData = request.body;
-    const newVouchers = await vouchersService.createVouchers(vouchersData);
+    const newVouchers = await vouchersService.createVoucher(vouchersData);
     response.status(201).json(newVouchers);
   } catch (error) {
     next(error);
@@ -20,6 +20,6 @@ async function addVouchers(request, response, next) {
 }
 
 module.exports = {
-  getVouchers,
+  getVoucher,
   addVouchers,
 };
