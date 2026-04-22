@@ -69,7 +69,7 @@ async function changePassword(id, hashedPassword) {
 async function addSaldo(id, amount) {
   const numericAmount = Number(amount);
 
-  if (isNaN(numericAmount) || numericAmount <= 0) {
+  if (Number.isNaN(numericAmount) || numericAmount <= 0) {
     throw errorResponder(
       errorTypes.UNPROCESSABLE_ENTITY,
       'Jumlah saldo harus berupa angka positif'

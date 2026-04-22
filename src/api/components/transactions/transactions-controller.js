@@ -26,20 +26,20 @@ async function redeemVouchers(request, response, next) {
 
 async function orderProducts(request, response, next) {
   try {
-    const { id } = request.user;
+    const userId = request.user.id;
     const { productId, quantity } = request.body;
 
     if (!productId || !quantity) {
       return next(
         errorResponder(
           errorTypes.VALIDATION_ERROR,
-          'Product ID and Quantity are required!'
+          'ID Produk dan kuantitas wajib diisi!'
         )
       );
     }
 
     const orderResult = await transactionsService.orderProducts(
-      id,
+      userId,
       productId,
       quantity
     );
