@@ -106,7 +106,7 @@ async function updateProduct(id, data) {
 // }
 
 module.exports = {
-  getAllProducts,
+  // getAllProducts,
   createProducts,
   updateProduct,
   // deleteProduct,
