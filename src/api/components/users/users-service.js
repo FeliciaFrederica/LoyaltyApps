@@ -46,6 +46,31 @@ async function changePassword(id, hashedPassword) {
   return usersRepository.changePassword(id, hashedPassword);
 }
 
+async function addSaldo(id, amount) {
+  const numericAmount = Number(amount);
+
+  if (isNaN(numericAmount) || numericAmount <= 0) {
+    throw errorResponder(
+      errorTypes.UNPROCESSABLE_ENTITY,
+      'Jumlah saldo harus berupa angka positif'
+    );
+  }
+
+  const user = await usersRepository.getUser(id);
+  if (!user) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Pengguna tidak ditemukan');
+  }
+
+  const updatedUser = await usersRepository.addSaldo(id, numericAmount);
+
+  return {
+    message: 'Saldo berhasil ditambahkan',
+    userId: updatedUser.id,
+    fullName: updatedUser.fullName,
+    currentSaldo: updatedUser.saldo,
+  };
+}
+
 async function getUserMembershipData(id) {
   const [user, totalSpent] = await Promise.all([
     usersRepository.getUser(id),
@@ -70,4 +95,5 @@ module.exports = {
   updateUser,
   changePassword,
   getUserMembershipData,
+  addSaldo,
 };

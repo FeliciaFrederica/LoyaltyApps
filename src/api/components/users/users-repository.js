@@ -43,6 +43,14 @@ async function getTotalSpent(userId) {
   return result.length > 0 ? result[0].total : 0;
 }
 
+async function addSaldo(id, amount) {
+  return Users.findByIdAndUpdate(
+    id,
+    { $inc: { saldo: amount } },
+    { new: true }
+  );
+}
+
 module.exports = {
   getUser,
   getUserWithPassword,
@@ -51,4 +59,5 @@ module.exports = {
   updateUser,
   changePassword,
   getTotalSpent,
+  addSaldo,
 };
