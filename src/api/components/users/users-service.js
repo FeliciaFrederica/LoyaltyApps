@@ -15,11 +15,12 @@ async function getUser(id) {
   return {
     id: user.id,
     email: user.email,
-    fullName: user.fullName,
+    fullName: user.fullName || user.name,
     points: user.points || 0,
+    saldo: user.saldo || 0,
     vouchers: vouchers || [],
     membershipTier: user.membershipTier,
-    totalSpend: user.totalSpend,
+    totalSpend: user.totalSpend || 0,
   };
 }
 
@@ -44,7 +45,6 @@ async function updateUser(id, email, fullName) {
   return usersRepository.updateUser(id, email, fullName);
 }
 
-// ===== YOUR PART =====
 async function addPoints(userId, points) {
   const user = await usersRepository.getUser(userId);
   user.points += points;
@@ -62,7 +62,6 @@ async function subtractPoints(userId, points) {
   return user.save();
 }
 
-// ===== TEAM PART =====
 async function changePassword(id, hashedPassword) {
   return usersRepository.changePassword(id, hashedPassword);
 }
@@ -94,13 +93,9 @@ async function addSaldo(id, amount) {
 
 async function getUserMembershipData(id) {
   const [user, totalSpent] = await Promise.all([
-    usersRepository.getUser(id),
+    getUser(id),
     usersRepository.getTotalSpent(id),
   ]);
-
-  if (!user) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Data pengguna tidak ditemukan');
-  }
 
   return {
     user,

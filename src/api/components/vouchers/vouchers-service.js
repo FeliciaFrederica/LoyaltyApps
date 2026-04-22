@@ -1,17 +1,15 @@
 const vouchersRepository = require('./vouchers-repository');
-const { errorResponder, errorTypes } = require('../../../core/errors');
+// const { errorResponder, errorTypes } = require('../../../core/errors');
 
-const getAllVouchers = () => vouchersRepository.getVouchers();
+async function getAllVoucher() {
+  return vouchersRepository.getVoucher();
+}
 
 async function getVoucherById(voucherId) {
-  const voucher = await vouchersRepository.getVoucherById(voucherId);
-  if (!voucher) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Voucher tidak ditemukan.');
-  }
   return vouchersRepository.getVoucherById(voucherId);
 }
 
-async function createVouchers(data) {
+async function createVoucher(data) {
   const { code, discount, quota, expiredAt } = data;
 
   // validasi apakah data sudah lengkap
@@ -62,8 +60,8 @@ async function decreaseQuota(voucherId) {
 }
 
 module.exports = {
-  getAllVouchers,
-  createVouchers,
+  getAllVoucher,
+  createVoucher,
   decreaseQuota,
   getVoucherById,
 };

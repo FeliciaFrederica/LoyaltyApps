@@ -1,18 +1,14 @@
 const { Vouchers } = require('../../../models');
 
-async function getVouchers() {
+async function getVoucher() {
   return Vouchers.find();
 }
 
-async function getVouchersByCode(code) {
+async function getVoucherByCode(code) {
   return Vouchers.findOne({ code });
 }
 
-async function getVouchersByUserId(userId) {
-  return Vouchers.findOne({ userId });
-}
-
-async function createVouchers(code, discount, quota, expiredAt) {
+async function createVoucher(code, discount, quota, expiredAt) {
   return Vouchers.create({ code, discount, quota, expiredAt });
 }
 
@@ -28,10 +24,9 @@ async function deleteVouchers(id) {
 }
 
 module.exports = {
-  getVouchers,
-  getVouchersByCode,
-  getVouchersByUserId,
-  createVouchers,
+  getVoucher,
+  getVoucherByCode,
+  createVoucher,
   updateVouchers,
   deleteVouchers,
 };
