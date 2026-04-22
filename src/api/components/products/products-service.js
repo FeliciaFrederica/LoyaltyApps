@@ -17,7 +17,7 @@ async function createProducts(data) {
       const error = new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
       error.status = 400;
       throw error;
->>>>>>> df798bc469621028543fc096bfbc0e33e5f33584
+>>>>>>>>> Temporary merge branch 2
   }
 
   // validasi apakah nominal harga yang dimasukkan bernilai minus
