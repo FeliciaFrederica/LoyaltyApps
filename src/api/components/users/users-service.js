@@ -18,6 +18,8 @@ async function getUser(id) {
     fullName: user.fullName,
     points: user.points || 0,
     vouchers: vouchers || [],
+    membershipTier: user.membershipTier,
+    totalSpend: user.totalSpend,
   };
 }
 
@@ -42,6 +44,25 @@ async function updateUser(id, email, fullName) {
   return usersRepository.updateUser(id, email, fullName);
 }
 
+// ===== YOUR PART =====
+async function addPoints(userId, points) {
+  const user = await usersRepository.getUser(userId);
+  user.points += points;
+  return user.save();
+}
+
+async function subtractPoints(userId, points) {
+  const user = await usersRepository.getUser(userId);
+
+  if (user.points < points) {
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Point tidak mencukupi');
+  }
+
+  user.points -= points;
+  return user.save();
+}
+
+// ===== TEAM PART =====
 async function changePassword(id, hashedPassword) {
   return usersRepository.changePassword(id, hashedPassword);
 }
@@ -93,6 +114,8 @@ module.exports = {
   emailExists,
   createUser,
   updateUser,
+  addPoints,
+  subtractPoints,
   changePassword,
   getUserMembershipData,
   addSaldo,

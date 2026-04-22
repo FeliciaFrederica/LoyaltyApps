@@ -3,14 +3,8 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function earnPoint(request, response, next) {
   try {
-    const { id } = request.user;
-    const { points, productId } = request.body;
-    const result = await transactionsService.createTransaction({
-      userId: id,
-      productId,
-      type: 'earn',
-      points,
-    });
+    const userId = request.user.id;
+    const result = await transactionsService.earnPoint(userId);
     return response.status(201).json(result);
   } catch (error) {
     return next(error);
@@ -19,15 +13,12 @@ async function earnPoint(request, response, next) {
 
 async function redeemVouchers(request, response, next) {
   try {
-    const { id } = request.user;
-    const { points, productId } = request.body;
-    const result = await transactionsService.createTransaction({
-      userId: id,
-      productId,
-      type: 'redeem',
-      points,
-    });
-    return response.status(201).json(result);
+    const userId = request.user.id;
+    const { voucherId } = request.body;
+
+    const result = await transactionsService.redeemVouchers(userId, voucherId);
+
+    return response.status(200).json(result);
   } catch (error) {
     return next(error);
   }
@@ -60,8 +51,8 @@ async function orderProducts(request, response, next) {
 
 async function getTransactionHistory(request, response, next) {
   try {
-    const { id } = request.user;
-    const history = await transactionsService.getTransactionHistory(id);
+    const userId = request.user.id;
+    const history = await transactionsService.getTransactionHistory(userId);
     return response.status(200).json(history);
   } catch (error) {
     return next(error);

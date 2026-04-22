@@ -1,16 +1,54 @@
 const transactionsRepository = require('./transactions-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
+const userService = require('../users/users-service');
+const voucherService = require('../vouchers/vouchers-service');
 
-// async function earnPoint(request, response, next) {
-//   //  todo
-// }
+async function earnPoint(userId) {
+  const earnedPoints = 100;
 
-// async function redeemVouchers(request, response, next) {
-//   // todo
-// }
+  await userService.addPoints(userId, earnedPoints);
+
+  return transactionsRepository.createTransaction({
+    userId,
+    type: "earn",
+    points: earnedPoints,
+    date: new Date()
+  });
+}
+
+async function redeemVouchers(userId, voucherId) {
+  const user = await userService.getUser(userId);
+  const voucher = await voucherService.getVoucherById(voucherId);
+
+  if (!voucher) {
+    throw errorResponder(errorTypes.NOT_FOUND, "Voucher tidak ditemukan");
+  }
+
+  if (voucher.expiredAt && voucher.expiredAt < new Date()) {
+    throw errorResponder(errorTypes.BAD_REQUEST, "Voucher sudah expired");
+  }
+
+  if (voucher.quota <= 0) {
+    throw errorResponder(errorTypes.BAD_REQUEST, "Voucher tidak tersedia");
+  }
+
+  if (user.points < voucher.pointsRequired) {
+    throw errorResponder(errorTypes.BAD_REQUEST, "Points tidak mencukupi");
+  }
+
+  await userService.subtractPoints(userId, voucher.pointsRequired);
+  await voucherService.decreaseQuota(voucherId);
+
+  return transactionsRepository.createTransaction({
+    userId,
+    type: "redeem",
+    points: voucher.pointsRequired,
+    voucherId,
+    date: new Date()
+  });
+}
 
 async function orderProducts(userId, productId, quantity) {
-  // cek kuantitas
   if (quantity <= 0) {
     throw errorResponder(
       errorTypes.VALIDATION_ERROR,
@@ -18,13 +56,11 @@ async function orderProducts(userId, productId, quantity) {
     );
   }
 
-  // cek produk
   const product = await transactionsRepository.getProductById(productId);
   if (!product) {
     throw errorResponder(errorTypes.NOT_FOUND, 'Produk tidak ditemukan.');
   }
 
-  // cek stok
   if (product.stock < quantity) {
     throw errorResponder(errorTypes.VALIDATION_ERROR, 'Maaf, stok habis.');
   }
@@ -57,7 +93,6 @@ async function orderProducts(userId, productId, quantity) {
   const pointsMultiplier = user.membershipTier === 'Platinum' ? 2 : 1;
   const pointsEarned = Math.floor(totalPrice / 30000) * pointsMultiplier;
 
-  // simpan transaksi
   const transaction = await transactionsRepository.createTransaction({
     userId,
     productId,
@@ -103,15 +138,20 @@ async function orderProducts(userId, productId, quantity) {
 
 async function getTransactionHistory(userId) {
   const history = await transactionsRepository.getTransactionHistory(userId);
+
   if (!history || history.length === 0) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Transaction history is empty');
+    throw errorResponder(
+      errorTypes.NOT_FOUND,
+      'Transaction history not found for user'
+    );
   }
+
   return history;
 }
 
 module.exports = {
-  // earnPoint,
-  // redeemVouchers,
+  earnPoint,
+  redeemVouchers,
   orderProducts,
   getTransactionHistory,
 };
