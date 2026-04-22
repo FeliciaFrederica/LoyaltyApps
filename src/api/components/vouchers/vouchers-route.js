@@ -1,15 +1,17 @@
 const express = require('express');
 const vouchersController = require('./vouchers-controller');
-const { userAuth, adminOnly } = require('../middlewares/auth-middleware');
+const userAuth = require('../../middlewares/user-middleware');
+const adminOnly = require('../../middlewares/admin-middlewares');
 
 const route = express.Router();
 
 module.exports = (app) => {
-  app.use('/vouchers', route);
+  app.use('/products/vouchers', route);
 
-  // melihat voucher
-  route.get('/', vouchersController.getVouchers);
+  // melihat voucher yang tersedia
+  route.get('/', userAuth, vouchersController.getVouchers);
 
   // upload voucher (admin)
-  route.post('/', adminOnly, vouchersController.addVouchers);
+  route.post('/', userAuth, adminOnly, vouchersController.addVouchers);
+
 };

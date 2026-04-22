@@ -14,28 +14,26 @@ async function orderProducts(userId, productId, quantity) {
   if (quantity <= 0) {
     throw errorResponder(
       errorTypes.VALIDATION_ERROR,
-      'Quantity must be at least 1'
+      'Kuantitas minimal 1 produk'
     );
   }
 
   // cek produk
   const product = await transactionsRepository.getProductById(productId);
   if (!product) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Product not found');
+    throw errorResponder(errorTypes.NOT_FOUND, 'Produk tidak ditemukan.');
   }
 
   // cek stok
   if (product.stock < quantity) {
-    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Insufficient stock');
+    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Maaf, stok habis.');
   }
 
   // cek user
   const user = await transactionsRepository.getUserById(userId);
   if (!user) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'User not found');
+    throw errorResponder(errorTypes.NOT_FOUND, 'User tidak ditemukan');
   }
-
-  const currentPoints = user.points || 0;
 
   // logic diskon berdasarkan membership tier
   let discount = 0;
@@ -46,6 +44,14 @@ async function orderProducts(userId, productId, quantity) {
   }
 
   const totalPrice = product.price * quantity * (1 - discount);
+
+  const userBalance = user.balance || 0;
+  if (userBalance < totalPrice) {
+    throw errorResponder(
+      errorTypes.VALIDATION_ERROR,
+      `Saldo tidak cukup. Total belanja Rp ${totalPrice.toLocaleString()}. Saldo Anda hanya Rp Rp ${userBalance.toLocaleString()}}.`
+    );
+  }
 
   // perhitungan poin (Rp30.000/poin, khusus Platinum poin didapat 2x lipat)
   const pointsMultiplier = user.membershipTier === 'Platinum' ? 2 : 1;
@@ -58,11 +64,12 @@ async function orderProducts(userId, productId, quantity) {
     quantity,
     totalPrice,
     points: pointsEarned,
-    typr: 'order',
+    type: 'order',
     date: new Date(),
   });
 
-  // update membership user
+  // update data user
+  const newBalance = userBalance - totalPrice;
   const newTotalSpend = (user.totalSpend || 0) + totalPrice;
   const newPoints = (user.points || 0) + pointsEarned;
 
@@ -73,16 +80,24 @@ async function orderProducts(userId, productId, quantity) {
     newTier = 'Gold';
   }
 
+  // pengurangan stok
+  product.stock -= quantity;
+  await product.save();
+
   // update user data
+  user.balance = newBalance;
   user.points = newPoints;
   user.totalSpend = newTotalSpend;
   user.membershipTier = newTier;
+
   await user.save();
 
   return {
-    message: 'Order success!',
-    detail: transaction,
+    message: 'Order berhasil!',
+    balanceLeft: newBalance,
+    pointsEarned,
     newTier,
+    detail: transaction,
   };
 }
 
@@ -95,8 +110,8 @@ async function getTransactionHistory(userId) {
 }
 
 module.exports = {
-  earnPoint,
-  redeemVouchers,
+  // earnPoint,
+  // redeemVouchers,
   orderProducts,
   getTransactionHistory,
 };

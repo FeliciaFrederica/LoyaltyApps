@@ -1,3 +1,4 @@
+require('dotenv').config();
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const { Users } = require('../../models');
@@ -9,11 +10,10 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET, // ❗ INI WAJIB
+      secretOrKey: process.env.JWT_SECRET,
     },
     async (payload, done) => {
-      const user = await Users.findOne({ email: payload.email });
-
+      const user = await Users.findById(payload.id);
       if (!user) {
         return done(null, false);
       }

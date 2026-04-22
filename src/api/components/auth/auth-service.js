@@ -7,6 +7,7 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 function generateToken(user) {
   const secretKey = process.env.JWT_SECRET;
   const payload = {
+    id: user._id,
     email: user.email,
     role: user.role,
     timestamp: Date.now(),
@@ -45,7 +46,7 @@ async function register(email, password, fullName) {
   });
 
   return {
-    id: user.id,
+    id: user._id,
     email: user.email,
     fullName: user.fullName,
   };
@@ -54,10 +55,11 @@ async function register(email, password, fullName) {
 async function checkLogin(email, password) {
   const user = await authRepository.getUserByEmail(email);
   const userPass = user ? user.password : '<RANDOM>';
-  const loginPassed = passwordMatched(password, userPass);
+  const loginPassed = await passwordMatched(password, userPass);
 
   if (user && loginPassed) {
     return {
+      id: user._id,
       email: user.email,
       token: generateToken(user),
     };
