@@ -1,6 +1,7 @@
 const express = require('express');
 const vouchersController = require('./vouchers-controller');
-const { userAuth, adminOnly } = require('../middlewares/auth-middleware');
+const userAuth = require('../../middlewares/user-middleware');
+const adminOnly = require('../../middlewares/admin-middlewares');
 
 const route = express.Router();
 

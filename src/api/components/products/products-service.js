@@ -1,37 +1,38 @@
 const productsRepository = require('./products-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
-async function getAllProducts() {
-  return await productsRepository.getProducts();
-}
+// async function getAllProducts() {
+//   return await productsRepository.getProducts();
+// }
 
 async function createProducts(data) {
   const { name, price, stock, description } = data;
 
   // validasi apakah harga dan nama tersedia
   if (!name || name.trim() === '' || price === undefined) {
-      const error = new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
-      error.status = 400;
-      throw error;
+    const error = new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
+    error.status = 400;
+    throw error;
   }
 
   // validasi apakah nominal harga yang dimasukkan bernilai minus
-  if (price < 0) {
-      const error = new Error('Harga tidak valid! Harga tidak boleh kurang dari 0.');
+  if (price <= 0) {
+      const error = new Error('Harga tidak valid! Harga harus lebih besar dari 0.');
       error.status = 400;
       throw error;
   }
 
   // cek apakah ada duplikasi nama products
-  const existingProduct = await productsRepository.findByName(name.trim());
+  const formattedName = name.trim().toLowerCase();
+  const existingProduct = await productsRepository.findByName(formattedName);
   
   if (existingProduct) {
     const error = new Error('Produk sudah terdaftar!');
-    error.status = 409; 
+    error.status = 409;
     throw error;
   }
 
-  const newProduct = await productsRepository.createProduct(
+  const newProducts = await productsRepository.createProducts(
     name.trim(),
     price,
     stock,
@@ -41,9 +42,8 @@ async function createProducts(data) {
   return {
     success: true,
     message: 'Produk berhasil ditambahkan',
-    data: newProduct
+    data: newProducts
   };
-
 }
 
 async function updateProduct(id, data) {
@@ -105,7 +105,7 @@ async function updateProduct(id, data) {
 // }
 
 module.exports = {
-  getAllProducts,
+  // getAllProducts,
   createProducts,
   updateProduct,
   // deleteProduct,

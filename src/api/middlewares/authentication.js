@@ -1,3 +1,4 @@
+require('dotenv').config();
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const { Users } = require('../../models');

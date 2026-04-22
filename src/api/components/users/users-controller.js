@@ -85,9 +85,10 @@ async function getMemberships(request, response, next) {
     return response.status(200).json({
       fullName: user.fullName,
       currentPoints: user.points,
-      totalSpent: totalSpent,
+      currentSaldo: user.saldo || 0,
+      totalSpent,
       membership: {
-        tier: tier,
+        tier,
         benefits: {
           discount: `${discount}%`,
           pointsRule: `${pointMultiplier} poin per Rp30.000`,
@@ -104,8 +105,26 @@ async function getMemberships(request, response, next) {
   }
 }
 
+async function addSaldo(request, response, next) {
+  try {
+    const id = request.user._id;
+    const { amount } = request.body;
+
+    const updatedUser = await usersService.addSaldo(id, amount);
+
+    return response.status(200).json({
+      message: 'Saldo berhasil ditambahkan',
+      addedAmount: amount,
+      currentSaldo: updatedUser.saldo,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getUser,
   changePassword,
   getMemberships,
+  addSaldo,
 };
