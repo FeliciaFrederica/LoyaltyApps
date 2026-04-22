@@ -16,14 +16,15 @@ async function createProducts(data) {
   }
 
   // validasi apakah nominal harga yang dimasukkan bernilai minus
-  if (price < 0) {
-      const error = new Error('Harga tidak valid! Harga tidak boleh kurang dari 0.');
+  if (price <= 0) {
+      const error = new Error('Harga tidak valid! Harga harus lebih besar dari 0.');
       error.status = 400;
       throw error;
   }
 
   // cek apakah ada duplikasi nama products
-  const existingProduct = await productsRepository.findByName(name.trim());
+  const formattedName = name.trim().toLowerCase();
+  const existingProduct = await productsRepository.findByName(formattedName);
   
   if (existingProduct) {
     const error = new Error('Produk sudah terdaftar!');
@@ -31,7 +32,7 @@ async function createProducts(data) {
     throw error;
   }
 
-  const newProduct = await productsRepository.createProduct(
+  const newProducts = await productsRepository.createProducts(
     name.trim(),
     price,
     stock,
@@ -41,7 +42,7 @@ async function createProducts(data) {
   return {
     success: true,
     message: 'Produk berhasil ditambahkan',
-    data: newProduct
+    data: newProducts
   };
 
 }
