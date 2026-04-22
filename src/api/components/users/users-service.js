@@ -44,7 +44,6 @@ async function updateUser(id, email, fullName) {
   return usersRepository.updateUser(id, email, fullName);
 }
 
-// ===== YOUR PART =====
 async function addPoints(userId, points) {
   const user = await usersRepository.getUser(userId);
   user.points += points;
@@ -62,7 +61,6 @@ async function subtractPoints(userId, points) {
   return user.save();
 }
 
-// ===== TEAM PART =====
 async function changePassword(id, hashedPassword) {
   return usersRepository.changePassword(id, hashedPassword);
 }

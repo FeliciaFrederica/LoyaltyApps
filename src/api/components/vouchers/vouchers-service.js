@@ -5,35 +5,36 @@ async function getAllVouchers() {
   return await vouchersRepository.getVouchers();
 }
 
-async function getVoucherById(voucherId){
-    return vouchersRepository.getVoucherById(voucherId);
+async function getVoucherById(voucherId) {
+  return vouchersRepository.getVoucherById(voucherId);
 }
 
 async function createVouchers(data) {
   const { code, discount, quota, expiredAt } = data;
 
-  // validasi apakah data sudah lengkap
   if (!code || !discount || quota === undefined || !expiredAt) {
-    const error = new Error('Data tidak lengkap! Semua field wajib diisi.');
-    error.status = 400;
-    throw error;
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'Data tidak lengkap! Semua field wajib diisi.'
+    );
   }
 
-  // validasi jumlah quota voucher
   if (quota <= 0) {
-    const error = new Error('Kuota voucher harus lebih dari 0.');
-    error.status = 400;
-    throw error;
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'Kuota voucher harus lebih dari 0.'
+    );
   }
 
-  // memeriksa apakah ada duplikasi voucher
   const existingVoucher = await vouchersRepository.getVoucherByCode(
     code.toUpperCase()
   );
+
   if (existingVoucher) {
-    const error = new Error('Kode voucher sudah ada!');
-    error.status = 409;
-    throw error;
+    throw errorResponder(
+      errorTypes.CONFLICT,
+      'Kode voucher sudah ada!'
+    );
   }
 
   const newVoucher = await vouchersRepository.createVoucher(
@@ -50,24 +51,23 @@ async function createVouchers(data) {
   };
 }
 
-async function decreaseQuota(voucherId){
-    const voucher = await vouchersRepository.getVoucherById(voucherId);
-    if (!voucher || voucher.quota <= 0){
-        throw new Error("Voucher tidak tersedia");
-    }
-    voucher.quota -= 1;
-    return voucher.save();
+async function decreaseQuota(voucherId) {
+  const voucher = await vouchersRepository.getVoucherById(voucherId);
+
+  if (!voucher || voucher.quota <= 0) {
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'Voucher tidak tersedia'
+    );
+  }
+
+  voucher.quota -= 1;
+  return voucher.save();
 }
 
 module.exports = {
-<<<<<<< HEAD
-    getAllVouchers,
-    createVouchers,
-    decreaseQuota,
-    getVoucherById
-};
-=======
   getAllVouchers,
   createVouchers,
+  decreaseQuota,
+  getVoucherById,
 };
->>>>>>> main
