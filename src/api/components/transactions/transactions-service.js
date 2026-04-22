@@ -10,9 +10,9 @@ async function earnPoint(userId) {
 
   return transactionsRepository.createTransaction({
     userId,
-    type: "earn",
+    type: 'earn',
     points: earnedPoints,
-    date: new Date()
+    date: new Date(),
   });
 }
 
@@ -21,19 +21,19 @@ async function redeemVouchers(userId, voucherId) {
   const voucher = await voucherService.getVoucherById(voucherId);
 
   if (!voucher) {
-    throw errorResponder(errorTypes.NOT_FOUND, "Voucher tidak ditemukan");
+    throw errorResponder(errorTypes.NOT_FOUND, 'Voucher tidak ditemukan');
   }
 
   if (voucher.expiredAt && voucher.expiredAt < new Date()) {
-    throw errorResponder(errorTypes.BAD_REQUEST, "Voucher sudah expired");
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Voucher sudah expired');
   }
 
   if (voucher.quota <= 0) {
-    throw errorResponder(errorTypes.BAD_REQUEST, "Voucher tidak tersedia");
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Voucher tidak tersedia');
   }
 
   if (user.points < voucher.pointsRequired) {
-    throw errorResponder(errorTypes.BAD_REQUEST, "Points tidak mencukupi");
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Points tidak mencukupi');
   }
 
   await userService.subtractPoints(userId, voucher.pointsRequired);
@@ -41,19 +41,16 @@ async function redeemVouchers(userId, voucherId) {
 
   return transactionsRepository.createTransaction({
     userId,
-    type: "redeem",
+    type: 'redeem',
     points: voucher.pointsRequired,
     voucherId,
-    date: new Date()
+    date: new Date(),
   });
 }
 
 async function orderProducts(userId, productId, quantity) {
   if (quantity <= 0) {
-    throw errorResponder(
-      errorTypes.VALIDATION_ERROR,
-      'Kuantitas minimal 1 produk'
-    );
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Kuantitas minimal 1 produk');
   }
 
   const product = await transactionsRepository.getProductById(productId);
@@ -62,7 +59,7 @@ async function orderProducts(userId, productId, quantity) {
   }
 
   if (product.stock < quantity) {
-    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Maaf, stok habis.');
+    throw errorResponder(errorTypes.BAD_REQUEST, 'Maaf, stok habis.');
   }
 
   // cek user
@@ -81,11 +78,11 @@ async function orderProducts(userId, productId, quantity) {
 
   const totalPrice = product.price * quantity * (1 - discount);
 
-  const userBalance = user.balance || 0;
-  if (userBalance < totalPrice) {
+  const userSaldo = user.saldo || 0;
+  if (userSaldo < totalPrice) {
     throw errorResponder(
-      errorTypes.VALIDATION_ERROR,
-      `Saldo tidak cukup. Total belanja Rp ${totalPrice.toLocaleString()}. Saldo Anda hanya Rp Rp ${userBalance.toLocaleString()}}.`
+      errorTypes.BAD_REQUEST,
+      `Saldo tidak cukup. Total belanja Rp ${totalPrice.toLocaleString()}. Saldo Anda hanya Rp ${userSaldo.toLocaleString()}.`
     );
   }
 
@@ -104,7 +101,7 @@ async function orderProducts(userId, productId, quantity) {
   });
 
   // update data user
-  const newBalance = userBalance - totalPrice;
+  const newSaldo = userSaldo - totalPrice;
   const newTotalSpend = (user.totalSpend || 0) + totalPrice;
   const newPoints = (user.points || 0) + pointsEarned;
 
@@ -120,7 +117,7 @@ async function orderProducts(userId, productId, quantity) {
   await product.save();
 
   // update user data
-  user.balance = newBalance;
+  user.saldo = newSaldo;
   user.points = newPoints;
   user.totalSpend = newTotalSpend;
   user.membershipTier = newTier;
@@ -129,7 +126,7 @@ async function orderProducts(userId, productId, quantity) {
 
   return {
     message: 'Order berhasil!',
-    balanceLeft: newBalance,
+    saldoLeft: newSaldo,
     pointsEarned,
     newTier,
     detail: transaction,
@@ -142,7 +139,7 @@ async function getTransactionHistory(userId) {
   if (!history || history.length === 0) {
     throw errorResponder(
       errorTypes.NOT_FOUND,
-      'Transaction history not found for user'
+      'Histori transkasi tidak ditemukan.'
     );
   }
 

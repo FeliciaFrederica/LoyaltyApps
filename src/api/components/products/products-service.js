@@ -102,10 +102,6 @@ async function updateProduct(id, data) {
   return { message: 'Produk berhasil diperbarui!', detail: result };
 }
 
-// async function deleteProduct(id) {
-//   // to do
-// }
-
 module.exports = {
   getAllProducts,
   createProducts,
