@@ -1,18 +1,18 @@
 const productsRepository = require('./products-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
-async function getAllProducts() {
-  return await productsRepository.getProducts();
-}
+// async function getAllProducts() {
+//   return await productsRepository.getProducts();
+// }
 
 async function createProducts(data) {
   const { name, price, stock, description } = data;
 
   // validasi apakah harga dan nama tersedia
   if (!name || name.trim() === '' || price === undefined) {
-      const error = new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
-      error.status = 400;
-      throw error;
+    const error = new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
+    error.status = 400;
+    throw error;
   }
 
   // validasi apakah nominal harga yang dimasukkan bernilai minus
@@ -28,7 +28,7 @@ async function createProducts(data) {
   
   if (existingProduct) {
     const error = new Error('Produk sudah terdaftar!');
-    error.status = 409; 
+    error.status = 409;
     throw error;
   }
 
@@ -44,7 +44,6 @@ async function createProducts(data) {
     message: 'Produk berhasil ditambahkan',
     data: newProducts
   };
-
 }
 
 async function updateProduct(id, data) {
@@ -106,7 +105,7 @@ async function updateProduct(id, data) {
 // }
 
 module.exports = {
-  getAllProducts,
+  // getAllProducts,
   createProducts,
   updateProduct,
   // deleteProduct,

@@ -35,14 +35,6 @@ async function orderProducts(userId, productId, quantity) {
     throw errorResponder(errorTypes.NOT_FOUND, 'User tidak ditemukan');
   }
 
-  const minBalance = 1;
-  if ((user.points || 0) < minBalance) {
-    throw errorResponder(
-      errorTypes.VALIDATION_ERROR,
-      `Minimal saldo Rupiah untuk melakukan transaksi adalah Rp ${product.price}.`
-    );
-  }
-
   // logic diskon berdasarkan membership tier
   let discount = 0;
   if (user.membershipTier === 'Platinum') {
@@ -52,6 +44,14 @@ async function orderProducts(userId, productId, quantity) {
   }
 
   const totalPrice = product.price * quantity * (1 - discount);
+
+  const userBalance = user.balance || 0;
+  if (userBalance < totalPrice) {
+    throw errorResponder(
+      errorTypes.VALIDATION_ERROR,
+      `Saldo tidak cukup. Total belanja Rp ${totalPrice.toLocaleString()}. Saldo Anda hanya Rp Rp ${userBalance.toLocaleString()}}.`
+    );
+  }
 
   // perhitungan poin (Rp30.000/poin, khusus Platinum poin didapat 2x lipat)
   const pointsMultiplier = user.membershipTier === 'Platinum' ? 2 : 1;
@@ -64,11 +64,12 @@ async function orderProducts(userId, productId, quantity) {
     quantity,
     totalPrice,
     points: pointsEarned,
-    typr: 'order',
+    type: 'order',
     date: new Date(),
   });
 
-  // update membership user
+  // update data user
+  const newBalance = userBalance - totalPrice;
   const newTotalSpend = (user.totalSpend || 0) + totalPrice;
   const newPoints = (user.points || 0) + pointsEarned;
 
@@ -79,16 +80,24 @@ async function orderProducts(userId, productId, quantity) {
     newTier = 'Gold';
   }
 
+  // pengurangan stok
+  product.stock -= quantity;
+  await product.save();
+
   // update user data
+  user.balance = newBalance;
   user.points = newPoints;
   user.totalSpend = newTotalSpend;
   user.membershipTier = newTier;
+
   await user.save();
 
   return {
     message: 'Order berhasil!',
-    detail: transaction,
+    balanceLeft: newBalance,
+    pointsEarned,
     newTier,
+    detail: transaction,
   };
 }
 
