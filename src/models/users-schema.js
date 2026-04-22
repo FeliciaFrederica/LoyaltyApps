@@ -34,5 +34,9 @@ module.exports = (db) =>
         type: Date,
         default: Date.now,
       },
+      saldo: {
+        type: Number,
+        default: 0,
+      },
     })
   );
