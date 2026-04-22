@@ -1,12 +1,14 @@
 const vouchersRepository = require('./vouchers-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
-async function getAllVouchers() {
-  return await vouchersRepository.getVouchers();
-}
+const getAllVouchers = () => vouchersRepository.getVouchers();
 
-async function getVoucherById(voucherId){
-    return vouchersRepository.getVoucherById(voucherId);
+async function getVoucherById(voucherId) {
+  const voucher = await vouchersRepository.getVoucherById(voucherId);
+  if (!voucher) {
+    throw errorResponder(errorTypes.NOT_FOUND, 'Voucher tidak ditemukan.');
+  }
+  return vouchersRepository.getVoucherById(voucherId);
 }
 
 async function createVouchers(data) {
@@ -50,24 +52,18 @@ async function createVouchers(data) {
   };
 }
 
-async function decreaseQuota(voucherId){
-    const voucher = await vouchersRepository.getVoucherById(voucherId);
-    if (!voucher || voucher.quota <= 0){
-        throw new Error("Voucher tidak tersedia");
-    }
-    voucher.quota -= 1;
-    return voucher.save();
+async function decreaseQuota(voucherId) {
+  const voucher = await vouchersRepository.getVoucherById(voucherId);
+  if (!voucher || voucher.quota <= 0) {
+    throw new Error('Voucher tidak tersedia');
+  }
+  voucher.quota -= 1;
+  return voucher.save();
 }
 
 module.exports = {
-<<<<<<< HEAD
-    getAllVouchers,
-    createVouchers,
-    decreaseQuota,
-    getVoucherById
-};
-=======
   getAllVouchers,
   createVouchers,
+  decreaseQuota,
+  getVoucherById,
 };
->>>>>>> main
