@@ -9,9 +9,8 @@ module.exports = (app) => {
   app.use('/products/vouchers', route);
 
   // melihat voucher yang tersedia
-  route.get('/', userAuth, vouchersController.getVouchers);
+  route.get('/', userAuth, vouchersController.getVoucher);
 
   // upload voucher (admin)
   route.post('/', userAuth, adminOnly, vouchersController.addVouchers);
-
 };
