@@ -9,50 +9,87 @@ async function createProducts(data) {
   const { name, price, stock, description } = data;
 
   // validasi apakah harga dan nama tersedia
-  if (!name || price === undefined) {
-    throw new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
+  if (!name || name.trim() === '' || price === undefined) {
+      const error = new Error('Data tidak lengkap! Nama dan harga wajib diisi.');
+      error.status = 400;
+      throw error;
   }
 
   // validasi apakah nominal harga yang dimasukkan bernilai minus
   if (price < 0) {
-    throw new Error('Harga tidak valid! Harga tidak boleh kurang dari 0.');
+      const error = new Error('Harga tidak valid! Harga tidak boleh kurang dari 0.');
+      error.status = 400;
+      throw error;
   }
 
   // cek apakah ada duplikasi nama products
-  const existingProducts = await productsRepository.getProducts();
-  const isDuplicate = existingProducts.some(
-    (product) => product.name.toLowerCase() === name.toLowerCase()
-  );
-
-  if (isDuplicate) {
-    throw new Error('Nama produk sudah digunakan! Silakan gunakan nama lain.');
+  const existingProduct = await productsRepository.findByName(name.trim());
+  
+  if (existingProduct) {
+    const error = new Error('Produk sudah terdaftar!');
+    error.status = 409; 
+    throw error;
   }
 
-  return await productsRepository.createProducts(
-    name,
+  const newProduct = await productsRepository.createProduct(
+    name.trim(),
     price,
     stock,
     description
   );
+
+  return {
+    success: true,
+    message: 'Produk berhasil ditambahkan',
+    data: newProduct
+  };
+
 }
 
 async function updateProduct(id, data) {
   const product = await productsRepository.getProductById(id);
+  // logic
+  const { name, price, stock, description } = data;
 
   if (!product) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Product Not Found!');
+    throw errorResponder(errorTypes.NOT_FOUND, 'Produk tidak ditemukan.');
+  }
+
+  // cek validasi input nama
+  if (name !== undefined && name.trim() === ' ') {
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'Input tidak valid. Pastikan nama tidak kosong.'
+    );
+  }
+
+  // cek validasi input harga
+  if (price !== undefined && price < 0) {
+    throw errorResponder(
+      errorTypes.BAD_REQUEST,
+      'Input tidak valid. Pastikan angka lebih besar dari 0.'
+    );
   }
 
   // cek validasi input stok
   if (data.stock !== undefined && data.stock < 0) {
     throw errorResponder(
       errorTypes.VALIDATION_ERROR,
-      'Invalid Value: must be a positive number.'
+      'Input tidak valid. Pastikan angka lebih besar dari 0.'
     );
   }
 
-  // logic
-  const { name, price, stock, description } = data;
+  // cek validasi duplikasi nama produk
+  if (name && name.toLowerCase() !== product.name.toLowerCase) {
+    const existingProducts = await productsRepository.getProductByName(name);
+    if (existingProducts) {
+      throw errorResponder(
+        errorTypes.BAD_REQUEST,
+        'Input tidak valid. Pastikan nama produk berbeda.'
+      );
+    }
+  }
+
   const result = await productsRepository.updateProducts(
     id,
     name,
@@ -60,16 +97,7 @@ async function updateProduct(id, data) {
     stock,
     description
   );
-
-  // cek validasi input produk
-  if (result.matchedCount === 0) {
-    throw errorResponder(
-      errorTypes.NOT_FOUND,
-      'Update Failed: Product Not Found!'
-    );
-  }
-
-  return { message: 'Product updated successfully!', detail: result };
+  return { message: 'Produk berhasil diperbarui!', detail: result };
 }
 
 // async function deleteProduct(id) {

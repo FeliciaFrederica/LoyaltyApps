@@ -52,17 +52,17 @@ async function orderProducts(userId, productId, quantity) {
   if (quantity <= 0) {
     throw errorResponder(
       errorTypes.VALIDATION_ERROR,
-      'Quantity must be at least 1'
+      'Kuantitas minimal 1 produk'
     );
   }
 
   const product = await transactionsRepository.getProductById(productId);
   if (!product) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Product not found');
+    throw errorResponder(errorTypes.NOT_FOUND, 'Produk tidak ditemukan.');
   }
 
   if (product.stock < quantity) {
-    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Insufficient stock');
+    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Maaf, stok habis.');
   }
 
   const user = await userService.getUser(userId);
@@ -85,7 +85,7 @@ async function orderProducts(userId, productId, quantity) {
     quantity,
     totalPrice,
     points: pointsEarned,
-    type: 'order', // FIX typo
+    type: 'order',
     date: new Date(),
   });
 
@@ -105,7 +105,7 @@ async function orderProducts(userId, productId, quantity) {
   await user.save();
 
   return {
-    message: 'Order success!',
+    message: 'Order berhasil!',
     detail: transaction,
     newTier,
   };
