@@ -4,6 +4,14 @@ async function getVoucher() {
   return Vouchers.find();
 }
 
+async function getVoucherById(voucherId) {
+  return Vouchers.findOne({ voucherId });
+}
+
+async function getVouchersByUserId(userId) {
+  return Vouchers.findOne({ userId });
+}
+
 async function getVoucherByCode(code) {
   return Vouchers.findOne({ code });
 }
@@ -25,6 +33,8 @@ async function deleteVouchers(id) {
 
 module.exports = {
   getVoucher,
+  getVoucherById,
+  getVouchersByUserId,
   getVoucherByCode,
   createVoucher,
   updateVouchers,
