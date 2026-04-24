@@ -23,6 +23,7 @@ async function createVoucher(data) {
   if (quota <= 0) {
     const error = new Error('Kuota voucher harus lebih dari 0.');
     error.status = 400;
+    
     throw error;
   }
 

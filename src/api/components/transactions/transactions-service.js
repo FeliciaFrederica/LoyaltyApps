@@ -32,17 +32,15 @@ async function redeemVouchers(userId, voucherId) {
     throw errorResponder(errorTypes.BAD_REQUEST, 'Voucher tidak tersedia');
   }
 
-  if (user.points < voucher.pointsRequired) {
-    throw errorResponder(errorTypes.BAD_REQUEST, 'Points tidak mencukupi');
-  }
+  const requirePoints = voucher.pointsRequired || 0;
 
-  await userService.subtractPoints(userId, voucher.pointsRequired);
+  await userService.subtractPoints(userId,requirePoints);
   await voucherService.decreaseQuota(voucherId);
 
   return transactionsRepository.createTransaction({
     userId,
     type: 'redeem',
-    points: voucher.pointsRequired,
+    points: requirePoints,
     voucherId,
     date: new Date(),
   });
