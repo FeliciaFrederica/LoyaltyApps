@@ -4,8 +4,12 @@ async function getProducts() {
   return Products.find();
 }
 
-async function findByName(name) {
-  return Products.findOne({ name: name }); 
+async function getProductByName(name) {
+  return Products.findOne({ name });
+}
+
+async function getProductById(id) {
+  return Products.findById(id);
 }
 
 async function createProducts(name, price, stock, description) {
@@ -25,7 +29,8 @@ async function deleteProducts(id) {
 
 module.exports = {
   getProducts,
-  findByName,
+  getProductByName,
+  getProductById,
   createProducts,
   updateProducts,
   deleteProducts,

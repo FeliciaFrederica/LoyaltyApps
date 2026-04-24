@@ -15,12 +15,17 @@ async function getUser(id) {
   return {
     id: user.id,
     email: user.email,
-    fullName: user.fullName,
+    fullName: user.fullName || user.name,
     points: user.points || 0,
+    saldo: user.saldo || 0,
     vouchers: vouchers || [],
     membershipTier: user.membershipTier,
-    totalSpend: user.totalSpend,
+    totalSpend: user.totalSpend || 0,
   };
+}
+
+async function getVoucherById(voucherId){
+  return VoucherModel.findbyId(voucherId);
 }
 
 async function getUserWithPassword(id) {
@@ -68,7 +73,7 @@ async function changePassword(id, hashedPassword) {
 async function addSaldo(id, amount) {
   const numericAmount = Number(amount);
 
-  if (isNaN(numericAmount) || numericAmount <= 0) {
+  if (Number.isNaN(numericAmount) || numericAmount <= 0) {
     throw errorResponder(
       errorTypes.UNPROCESSABLE_ENTITY,
       'Jumlah saldo harus berupa angka positif'
@@ -92,13 +97,9 @@ async function addSaldo(id, amount) {
 
 async function getUserMembershipData(id) {
   const [user, totalSpent] = await Promise.all([
-    usersRepository.getUser(id),
+    getUser(id),
     usersRepository.getTotalSpent(id),
   ]);
-
-  if (!user) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Data pengguna tidak ditemukan');
-  }
 
   return {
     user,
