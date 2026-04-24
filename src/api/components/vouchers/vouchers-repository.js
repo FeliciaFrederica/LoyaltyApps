@@ -5,11 +5,11 @@ async function getVoucher() {
 }
 
 async function getVoucherById(voucherId) {
-  return Vouchers.findById({ voucherId });
+  return Vouchers.findById(voucherId);
 }
 
 async function getVouchersByUserId(userId) {
-  return Vouchers.findById({ userId });
+  return [];
 }
 
 async function getVoucherByCode(code) {
