@@ -24,7 +24,7 @@ async function getUser(id) {
   };
 }
 
-async function getVoucherById(voucherId){
+async function getVoucherById(voucherId) {
   return VoucherModel.findbyId(voucherId);
 }
 
