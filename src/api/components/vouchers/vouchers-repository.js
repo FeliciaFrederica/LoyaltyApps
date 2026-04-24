@@ -5,15 +5,15 @@ async function getVoucher() {
 }
 
 async function getVoucherById(voucherId) {
-  return Vouchers.findOne({ voucherId });
+  return Vouchers.findById({ voucherId });
 }
 
 async function getVouchersByUserId(userId) {
-  return Vouchers.findOne({ userId });
+  return Vouchers.findById({ userId });
 }
 
 async function getVoucherByCode(code) {
-  return Vouchers.findOne({ code });
+  return Vouchers.findById({ code });
 }
 
 async function createVoucher(code, discount, quota, expiredAt) {
