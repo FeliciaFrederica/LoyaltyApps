@@ -24,6 +24,10 @@ async function getUser(id) {
   };
 }
 
+async function getVoucherById(voucherId){
+  return VoucherModel.findbyId(voucherId);
+}
+
 async function getUserWithPassword(id) {
   const user = await usersRepository.getUserWithPassword(id);
   if (!user) {
