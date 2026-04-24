@@ -2,7 +2,7 @@ const { Users, Transactions } = require('../../../models');
 const { ObjectId } = require('mongoose').Types;
 
 async function getUser(id) {
-  return Users.findById(id).select('email fullName points vouchers');
+  return Users.findById(id).select('email fullName points vouchers saldo');
 }
 
 async function getUserWithPassword(id) {
@@ -39,7 +39,7 @@ async function getTotalSpent(userId) {
       },
     },
   ]);
-  //ga ada transaksi, kembalikan 0
+  // ga ada transaksi, kembalikan 0
   return result.length > 0 ? result[0].total : 0;
 }
 
